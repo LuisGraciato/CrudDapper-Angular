@@ -1,5 +1,6 @@
 using CrudTreinoApi.Models;
 using CrudTreinoApi.Repository;
+using CrudTreinoApi.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrudTreinoApi.Controllers;
@@ -7,16 +8,16 @@ namespace CrudTreinoApi.Controllers;
 [Route("api/[controller]")]
  public class CadastroController : ControllerBase
     {
-        private readonly ICadastroRepository _repository;
-        public CadastroController(ICadastroRepository repository)
+        private readonly ICadastroService _service;
+        public CadastroController(ICadastroService service)
         {
-            _repository = repository;
+            _service= service;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var informacoes = await _repository.BuscaCadastrosAsync();
+            var informacoes = await _service.BuscaCadastrosAsync();
 
             return informacoes.Any()
                 ? Ok(informacoes)
@@ -27,7 +28,7 @@ namespace CrudTreinoApi.Controllers;
         public async Task<IActionResult> Get(int contactid)
         {
 
-            var informacao = await _repository.BuscaCadastroAsync(contactid);
+            var informacao = await _service.BuscaCadastroAsync(contactid);
 
             return informacao != null
                 ? Ok(informacao)
@@ -37,16 +38,20 @@ namespace CrudTreinoApi.Controllers;
     [HttpPost]
     public async Task<IActionResult> Post(CadastroRequest request)
     {
-        if (string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty (request.Mobile) || string.IsNullOrEmpty(request.Address))
+        try
         {
-            return BadRequest("Cadastro invalido");
+            var adicionado = await _service.AdicionaAsync(request);
+
+            return adicionado
+           ? Ok("Cadastro adicionadao com sucesso")
+           : BadRequest("Erro ao adionar Cadastro");
+        }
+        catch (Exception err)
+        {
+
+            return BadRequest(err.Message);
         }
 
-        var adicionado = await _repository.AdicionaAsync(request);
-
-        return adicionado
-            ? Ok("Cadastro adicionadao com sucesso")
-            : BadRequest("Erro ao adionar Cadastro");
     }
     
     [HttpPut("ContactID")]
@@ -54,7 +59,7 @@ namespace CrudTreinoApi.Controllers;
     {
         if (contactid <= 0) return BadRequest("Cadastro Invalido");
 
-        var informacao = await _repository.BuscaCadastroAsync(contactid);
+        var informacao = await _service.BuscaCadastroAsync(contactid);
 
         if (informacao == null) return NotFound("Cadastro não Existe");
 
@@ -62,7 +67,7 @@ namespace CrudTreinoApi.Controllers;
         if (string.IsNullOrEmpty(request.Mobile)) request.Mobile = informacao.Mobile;
         if (string.IsNullOrEmpty(request.Address)) request.Address = informacao.Address;
         
-        var atualizado = await _repository.AtualizarAsync(request, contactid);
+        var atualizado = await _service.AtualizarAsync(request, contactid);
 
         return atualizado
            ? Ok("Cadastro atualizado com sucesso")
@@ -74,11 +79,11 @@ namespace CrudTreinoApi.Controllers;
     {
         if (contactid <= 0) return BadRequest("Cadastro Invalido"); 
 
-        var informacao = await _repository.BuscaCadastroAsync(contactid);
+        var informacao = await _service.BuscaCadastroAsync(contactid);
 
         if (informacao == null) return NotFound("Cadastro não Existe"); 
 
-        var deletado = await _repository.DeletarAsync(contactid);
+        var deletado = await _service.DeletarAsync(contactid);
 
         return deletado
           ? Ok("Cadastro deletado com sucesso")

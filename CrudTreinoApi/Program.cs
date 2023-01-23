@@ -1,4 +1,6 @@
+using CrudService.Service;
 using CrudTreinoApi.Repository;
+using CrudTreinoApi.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<ICadastroRepository, CadastroRepository>();
+builder.Services.AddScoped<ICadastroService, CadastroService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

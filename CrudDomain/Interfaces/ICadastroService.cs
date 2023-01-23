@@ -1,8 +1,8 @@
 ﻿using CrudTreinoApi.Models;
 
-namespace CrudTreinoApi.Repository;
+namespace CrudTreinoApi.Service;
 
-    public interface ICadastroRepository
+    public interface ICadastroService
     {
         Task<IEnumerable<CadastroResponse>> BuscaCadastrosAsync();
         Task<CadastroResponse> BuscaCadastroAsync(int contactid);

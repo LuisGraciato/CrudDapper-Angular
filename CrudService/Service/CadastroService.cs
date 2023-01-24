@@ -23,10 +23,19 @@ namespace CrudService.Service
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.Mobile) || string.IsNullOrEmpty(request.Address))
+                if (string.IsNullOrEmpty(request.Name))    
                 {
-                    throw new Exception("Cadastro invalido");
+                    throw new Exception(" Nome invalido");
                 }
+                if (string.IsNullOrEmpty(request.Mobile))
+                {
+                    throw new Exception("Numero INvalido");
+                }
+                if (string.IsNullOrEmpty(request.Address))
+                {
+                    throw new Exception("Endereço errado");
+                }
+
                 return await _repository.AdicionaAsync(request);
 
             }
@@ -38,13 +47,15 @@ namespace CrudService.Service
 
         public async Task<bool> AtualizarAsync(CadastroRequest request, int contactid)
         {
-            var informacao = await _repository.BuscaCadastroAsync(contactid);
+          
             try
             {
                 if (contactid <= 0)
                 {
                     throw new Exception("Cadastro Invalido");
                 }
+                var informacao = await _repository.BuscaCadastroAsync(contactid);
+
                 if (informacao == null)
                 {
                     throw new Exception("Cadastro não Existe");
@@ -63,6 +74,7 @@ namespace CrudService.Service
 
         public Task<CadastroResponse> BuscaCadastroAsync(int contactid)
         {
+           
             return _repository.BuscaCadastroAsync(contactid);
         }
 

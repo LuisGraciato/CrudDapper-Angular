@@ -19,7 +19,7 @@ namespace CrudService.Service
         {
             _repository = repository;
         }
-        public Task<bool> AdicionaAsync(CadastroRequest request)
+        public async Task<bool> AdicionaAsync(CadastroRequest request)
         {
             try
             {
@@ -27,6 +27,7 @@ namespace CrudService.Service
                 {
                     throw new Exception("Cadastro invalido");
                 }
+                return await _repository.AdicionaAsync(request);
 
             }
             catch (Exception err)
@@ -35,24 +36,65 @@ namespace CrudService.Service
             }
         }
 
-        public Task<bool> AtualizarAsync(CadastroRequest request, int contactid)
+        public async Task<bool> AtualizarAsync(CadastroRequest request, int contactid)
         {
-            throw new NotImplementedException();
+            var informacao = await _repository.BuscaCadastroAsync(contactid);
+            try
+            {
+                if (contactid <= 0)
+                {
+                    throw new Exception("Cadastro Invalido");
+                }
+                if (informacao == null)
+                {
+                    throw new Exception("Cadastro não Existe");
+                } 
+
+                return await _repository.AtualizarAsync(request, contactid);
+            }
+
+            catch (Exception err)
+            {
+
+                throw err;
+            }
+           
         }
 
         public Task<CadastroResponse> BuscaCadastroAsync(int contactid)
         {
-            throw new NotImplementedException();
+            return _repository.BuscaCadastroAsync(contactid);
         }
 
         public Task<IEnumerable<CadastroResponse>> BuscaCadastrosAsync()
         {
-            throw new NotImplementedException();
+            return _repository.BuscaCadastrosAsync();
         }
 
-        public Task<bool> DeletarAsync(int contactid)
+        public async Task<bool> DeletarAsync(int contactid)
         {
-            throw new NotImplementedException();
+            var informacao = await _repository.BuscaCadastroAsync(contactid);
+
+            try
+            {
+                if (contactid <= 0)
+                {
+                   throw new Exception("Cadastro Invalido");
+                }
+                if (informacao == null)
+                {
+                    throw new Exception("Cadastro não Existe");
+                }
+
+
+                return await _repository.DeletarAsync(contactid);
+            }
+            catch (Exception err)
+            {
+
+                throw err;
+            }
+           
         }
     }
 }

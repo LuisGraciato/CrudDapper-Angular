@@ -57,16 +57,6 @@ namespace CrudTreinoApi.Controllers;
     [HttpPut("ContactID")]
     public async Task<IActionResult> Put(CadastroRequest request, int contactid)
     {
-        if (contactid <= 0) return BadRequest("Cadastro Invalido");
-
-        var informacao = await _service.BuscaCadastroAsync(contactid);
-
-        if (informacao == null) return NotFound("Cadastro não Existe");
-
-        if (string.IsNullOrEmpty(request.Name)) request.Name = informacao.Name;
-        if (string.IsNullOrEmpty(request.Mobile)) request.Mobile = informacao.Mobile;
-        if (string.IsNullOrEmpty(request.Address)) request.Address = informacao.Address;
-        
         var atualizado = await _service.AtualizarAsync(request, contactid);
 
         return atualizado
@@ -77,12 +67,7 @@ namespace CrudTreinoApi.Controllers;
     [HttpDelete("ContactID")] 
     public async Task<IActionResult> Delete(int contactid)
     {
-        if (contactid <= 0) return BadRequest("Cadastro Invalido"); 
-
-        var informacao = await _service.BuscaCadastroAsync(contactid);
-
-        if (informacao == null) return NotFound("Cadastro não Existe"); 
-
+    
         var deletado = await _service.DeletarAsync(contactid);
 
         return deletado
